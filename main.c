@@ -16,10 +16,10 @@ typedef struct{
     Data data_nasc;
 } Clientes;
 
-typedef struct node_Clientes {
+typedef struct Node_Clientes {
     Clientes dados_clientes;
-    struct node_Clientes *prev;
-    struct node_Clientes *next;
+    struct Node_Clientes *prev;
+    struct Node_Clientes *next;
 } Node_Clientes;
 
 typedef struct{
@@ -30,10 +30,10 @@ typedef struct{
     char cpf_cliente[15];
 } Carros;
 
-typedef struct node_carros {
+typedef struct Node_Carros {
     Carros dados_carros;
-    struct node_carros *prev;
-    struct node_carros *next;
+    struct Node_Carros *prev;
+    struct Node_Carros *next;
 } Node_Carros;
 
 typedef struct{
@@ -75,11 +75,11 @@ Lista_Carros* alocar_lista_carros() {
 
 //Verificação de Lista Vazia Clientes
 bool lista_vazia(Lista* l) {
-	return (l->begin == NULL && l->end == NULL && l->size == 0);
+	return (l->size == 0);
 }
 //Verificação de Lista Vazia Carros
 bool lista_vazia_carros(Lista_Carros* l) {
-	return (l->begin == NULL && l->end == NULL && l->size == 0);
+	return (l->size == 0);
 }
 
 
@@ -355,25 +355,25 @@ void navegar_lista(Lista* l) {
 	switch(opc){
 	    case 1:
 	    //se o proximo for diferente de nulo, ele vai pro proximo
-    	if(node_atual->next != NULL) {
-    		node_atual = node_atual->next;
-    	}else{
-    	    printf("\nEste é o último contato!\n\n");
-    	}
-	    break;
+			if(node_atual->next != NULL) {
+				node_atual = node_atual->next;
+			}else{
+				printf("\nEste é o último contato!\n\n");
+			}
+			break;
 	    case 2:
 	    //se o anterior for diferente de nulo, ele vai pro anterior
-	    if(node_atual->prev != NULL) {
-		    node_atual = node_atual->prev;
-	    }else{
-	        printf("\nNão há contato anterior!\n\n");
-	    }
-	    break;
+			if(node_atual->prev != NULL) {
+				node_atual = node_atual->prev;
+			}else{
+				printf("\nNão há contato anterior!\n\n");
+			}
+			break;
 	    case 0:
-	    break;
+			break;
 	    default:
-	    puts("\nOpção Inválida!\n\n");
-	    break;
+			puts("\nOpção Inválida!\n\n");
+			break;
 	}
 	}
 }
@@ -578,13 +578,9 @@ void salvar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
 	}
 	fclose(f);
 }
-int main()
-{
-    int opc = -1;
-    Lista* lista = alocar_lista();
-    Lista_Carros* lista_carros = alocar_lista_carros();
-    do{
-    puts("========= MENU =========");
+
+void exibir_menu(){
+	puts("========= MENU =========");
     puts("1 - Exibir Clientes");
     puts("2 - Inserir Cliente");
     puts("3 - Buscar Cliente por CPF");
@@ -595,58 +591,65 @@ int main()
     puts("8 - Exibir Carros");
     puts("0 - Sair");
     printf("Selecione a Opção: ");
+}
+int main()
+{
+    int opc = -1;
+    Lista* lista = alocar_lista();
+    Lista_Carros* lista_carros = alocar_lista_carros();
+    do{
+    exibir_menu();
     scanf("%d", &opc);
     getchar();
     switch(opc){
-        case 1:
-        imprimir_lista(lista);
-        break;
+			case 1:
+			imprimir_lista(lista);
+			break;
         case 2:
-        Clientes* cliente = inserir_dados_cliente();
-        Node_Clientes* node = alocar_node(cliente);
-        inserir_cliente(lista, node);
-        free(cliente);
-        break;
+			Clientes* cliente = inserir_dados_cliente();
+			Node_Clientes* node = alocar_node(cliente);
+			inserir_cliente(lista, node);
+			free(cliente);
+			break;
         case 3:
-        char cpf[15];
-        printf("Busque o CPF: ");
-        fgets(cpf, sizeof(cpf), stdin);
-        cpf[strcspn(cpf, "\n")] = '\0';
-        buscar_contato(lista, cpf);
-        break;
+			char cpf[15];
+			printf("Busque o CPF: ");
+			fgets(cpf, sizeof(cpf), stdin);
+			cpf[strcspn(cpf, "\n")] = '\0';
+			buscar_contato(lista, cpf);
+			break;
         case 4:
-        printf("Insira o CPF para Remover: ");
-        fgets(cpf, sizeof(cpf), stdin);
-        cpf[strcspn(cpf, "\n")] = '\0';
-        remover_contato(lista, lista_carros, cpf);
-        break;
+			printf("Insira o CPF para Remover: ");
+			fgets(cpf, sizeof(cpf), stdin);
+			cpf[strcspn(cpf, "\n")] = '\0';
+			remover_contato(lista, lista_carros, cpf);
+			break;
         case 5:
-        navegar_lista(lista);
-        break;
+			navegar_lista(lista);
+			break;
         case 6:
         break;
         case 7:
-        Carros* carro = inserir_dados_carro(lista);
-        if(carro != NULL){
-            Node_Carros* node_carro = alocar_node_carros(carro);
-            inserir_carro(lista_carros, node_carro);
-            free(carro);
-        }
-        break;
+			Carros* carro = inserir_dados_carro(lista);
+			if(carro != NULL){
+				Node_Carros* node_carro = alocar_node_carros(carro);
+				inserir_carro(lista_carros, node_carro);
+				free(carro);
+			}
+			break;
         case 8:
-        imprimir_lista_carros(lista, lista_carros);
-        break;
+			imprimir_lista_carros(lista, lista_carros);
+			break;
         case 0:
-        printf("\nEncerrando...\n");
-        break;
+			printf("\nEncerrando...\n");
+			break;
         default:
-        printf("\nOpção inválida!\n\n");
-        break;
+			printf("\nOpção inválida!\n\n");
+			break;
     }
-    }while(opc != 0);
+    } while(opc != 0);
     
     desalocar_lista(&lista);
     desalocar_lista_carros(&lista_carros);
-    
     return 0;
 }
