@@ -554,7 +554,7 @@ void imprimir_lista_carros(Lista* lista_clientes, Lista_Carros* l) {
 void salvar_clientes(const char* arquivo_csv, Lista* lista){
 		FILE* f = fopen(arquivo_csv, "w");
 		if(f == NULL){perror("Erro na abertura do arquivo CSV!");return;}
-		fprintf(f, "id_cliente, nome, cpf, email, telefone,data_nasc\n");
+		fprintf(f, "id_cliente,nome,cpf,email,telefone,data_nasc\n");
 		Node_Clientes* cliente_atual  = lista->begin;
 		while(cliente_atual != NULL){
 			fprintf(f, "%d,%s,%s,%s,%s,%02d/%02d/%04d\n",
@@ -714,7 +714,7 @@ void exibir_menu(){
     puts("3 - Buscar Cliente por CPF");
     puts("4 - Remover Cliente");
     puts("5 - Navegar na Lista de Clientes");
-    puts("6 - Salvar Lista de Clientes");
+    puts("6 - Salvar Dados");
     puts("7 - Inserir Carro");
     puts("8 - Exibir Carros");
     puts("0 - Sair");
