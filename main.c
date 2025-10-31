@@ -28,6 +28,7 @@ typedef struct{
     int ano;
     Data data_entrada;
     char cpf_cliente[15];
+	char cor[50];
 } Carros;
 
 typedef struct Node_Carros {
@@ -426,6 +427,10 @@ Carros* inserir_dados_carro(Lista* lista_clientes){
     printf("Digite o Modelo: ");
     fgets(carro->modelo, sizeof(carro->modelo), stdin);
     carro->modelo[strcspn(carro->modelo, "\n")] = '\0';
+
+	printf("Digite a Cor: ");
+	fgets(carro->cor, sizeof(carro->cor), stdin);
+	carro->cor[strcspn(carro->cor, "\n")] = '\0';
     
     printf("Digite o CPF do Cliente Dono: ");
     fgets(carro->cpf_cliente, sizeof(carro->cpf_cliente), stdin);
@@ -475,7 +480,8 @@ Node_Carros* alocar_node_carros(Carros* carro) {
 	node->dados_carros.data_entrada.dia = carro->data_entrada.dia;
 	node->dados_carros.data_entrada.mes = carro->data_entrada.mes;
 	node->dados_carros.data_entrada.ano = carro->data_entrada.ano;
-
+	node->dados_carros.ano = carro->ano;
+	strcpy(node->dados_carros.cor, carro->cor);
 	node->prev = NULL;
 	node->next = NULL;
 	return node;
@@ -527,6 +533,7 @@ void imprimir_lista_carros(Lista* lista_clientes, Lista_Carros* l) {
 	while(node_atual != NULL){
 	    printf("ID: %d\n", node_atual->dados_carros.id);
 	    printf("Modelo: %s\n", node_atual->dados_carros.modelo);
+		printf("Cor: %s\n", node_atual->dados_carros.cor);
 	    
 	    //atribui o cpf ligado ao carro para a variável
 	    char* cpf_cliente = node_atual->dados_carros.cpf_cliente;
@@ -567,13 +574,14 @@ void salvar_clientes(const char* arquivo_csv, Lista* lista){
 void salvar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
 	FILE* f = fopen(arquivo_csv, "w");
 	if(f==NULL){perror("Erro na abertura do arquivo CSV!");return;}
-	fprintf(f,"id_carro,cpf_cliente,modelo,ano,data_entrada\n");
+	fprintf(f,"id_carro,cpf_cliente,modelo,cor,ano,data_entrada\n");
 	Node_Carros* carro_atual = lista_carros->begin;
 	while(carro_atual != NULL){
-		fprintf(f, "%d,%s,%s,%d,%02d/%02d/%04d\n",
+		fprintf(f, "%d,%s,%s,%s,%d,%02d/%02d/%04d\n",
 			carro_atual->dados_carros.id,
 			carro_atual->dados_carros.cpf_cliente,
 			carro_atual->dados_carros.modelo,
+			carro_atual->dados_carros.cor,
 			carro_atual->dados_carros.ano,
 			carro_atual->dados_carros.data_entrada.dia,
 			carro_atual->dados_carros.data_entrada.mes,
@@ -582,6 +590,121 @@ void salvar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
 		carro_atual = carro_atual->next;
 	}
 	fclose(f);
+}
+
+void recuperar_clientes(const char* arquivo_csv, Lista* lista){
+	FILE* f = fopen(arquivo_csv, "r");
+	char linha[1024];
+	if(f == NULL) return;
+	fgets(linha,sizeof(linha), f); //ignorando o header
+	while(fgets(linha,sizeof(linha),f)){
+		linha[strcspn(linha,"\n")] = '\0';
+		if(linha[0] == '\0') continue;
+		Clientes* cliente_atual = (Clientes *) calloc(1, sizeof(Clientes));
+        if (!cliente_atual) {
+            fprintf(stderr, "Erro ao alocar memória para cliente\n");
+            fclose(f);
+            return;
+        }
+		char* token = strtok(linha,",");
+		int campo = 0;
+		while (token != NULL){
+			switch(campo){
+				case 0:
+					cliente_atual->id = atoi(token);
+					break;
+				case 1:
+					strcpy(cliente_atual->nome,token);
+					break;
+				case 2:
+					strcpy(cliente_atual->cpf,token);
+					break;
+				case 3:
+					strcpy(cliente_atual->email, token);
+					break;
+				case 4:
+					strcpy(cliente_atual->telefone,token);
+					break;
+				case 5:
+					int dia, mes, ano;
+					sscanf(token,"%d/%d/%d",&dia,&mes,&ano);
+					cliente_atual->data_nasc.dia = dia;
+					cliente_atual->data_nasc.mes = mes;
+                    cliente_atual->data_nasc.ano = ano;
+					break;
+				default:
+					break;
+			}
+			campo++;
+			token = strtok(NULL,",");
+		}
+		Node_Clientes* node_atual = alocar_node(cliente_atual);
+		inserir_cliente(lista,node_atual);
+		free(cliente_atual);
+		}
+	fclose(f);
+	printf("Clientes recuperados com sucesso!\n");
+}
+
+void recuperar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
+	FILE* f = fopen(arquivo_csv,"r");
+	if(f==NULL)return;
+	char linha[1024];
+	
+	fgets(linha,sizeof(linha),f);
+	while(fgets(linha,sizeof(linha),f)){
+		linha[strcspn(linha,"\n")] = '\0';
+
+		if(linha[0] == '\0') continue;
+		Carros* carro_atual = (Carros*) calloc(1,sizeof(Carros));
+		if (!carro_atual) {
+            fprintf(stderr, "Erro ao alocar memória para carro\n");
+            fclose(f);
+            return;
+        }
+		char* token = strtok(linha,",");
+		int campo = 0;
+		while(token != NULL){
+			switch(campo){
+				case 0:
+					carro_atual->id = atoi(token);
+					break;
+				case 1:
+					strcpy(carro_atual->cpf_cliente, token);
+					break;
+				case 2:
+					strcpy(carro_atual->modelo,token);
+					break;
+				case 3:
+					strcpy(carro_atual->cor,token);
+					break;
+				
+				case 4:
+					carro_atual->ano = atoi(token);
+					break;
+				case 5:
+					int dia, mes, ano;
+					sscanf(token,"%d/%d/%d",&dia,&mes,&ano);
+					carro_atual->data_entrada.dia = dia;
+					carro_atual->data_entrada.mes = mes;
+					carro_atual->data_entrada.ano = ano;
+					break;
+				default:
+					break;
+			}
+			campo++;
+			token = strtok(NULL,",");
+		}
+		Node_Carros* node_atual = alocar_node_carros(carro_atual);
+		inserir_carro(lista_carros,node_atual);
+		free(carro_atual);
+	}
+	fclose(f);
+}
+
+void recuperar_dados(Lista_Carros* lista_carros, Lista* lista){
+	recuperar_carros("carros.csv", lista_carros);
+	recuperar_clientes("clientes.csv",lista);
 }
 
 void exibir_menu(){
@@ -604,6 +727,7 @@ int main()
     int opc = -1;
     Lista* lista = alocar_lista();
     Lista_Carros* lista_carros = alocar_lista_carros();
+	recuperar_dados(lista_carros,lista);
     do{
     exibir_menu();
     scanf("%d", &opc);
