@@ -486,6 +486,45 @@ void imprimir_lista_carros(Lista* lista_clientes, Lista_Carros* l) {
 	}
 }
 
+void salvar_clientes(const char* arquivo_csv, Lista* lista){
+		FILE* f = fopen(arquivo_csv, "w");
+		if(f == NULL){perror("Erro na abertura do arquivo CSV!");return;}
+		fprintf(f, "id_cliente, nome, cpf, email, telefone,data_nasc,id_carro,modelo_carro,ano_carro,data_entrada_carro\n");
+		Node_Clientes* cliente_atual  = lista->begin;
+		while(cliente_atual != NULL){
+			fprintf(f, "%d,%s,%s,%s,%s,%02d/%02d/%04d\n",
+				cliente_atual->dados_clientes.id,
+				cliente_atual->dados_clientes.nome,
+				cliente_atual->dados_clientes.cpf,
+				cliente_atual->dados_clientes.email,
+				cliente_atual->dados_clientes.telefone,
+				cliente_atual->dados_clientes.data_nasc.dia,
+				cliente_atual->dados_clientes.data_nasc.mes,
+				cliente_atual->dados_clientes.data_nasc.ano);
+			cliente_atual = cliente_atual->next;
+		}
+		fclose(f);
+}
+
+void salvar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
+	FILE* f = fopen(arquivo_csv, "w");
+	if(f==NULL){perror("Erro na abertura do arquivo CSV!");return;}
+	fprintf(f,"id_carro,cpf_cliente,modelo,ano,data_entrada\n");
+	Node_Carros* carro_atual = lista_carros->begin;
+	while(carro_atual != NULL){
+		fprintf(f, "%d,%s,%s,%d,%02d/%02d/%04d\n",
+			carro_atual->dados_carros.id,
+			carro_atual->dados_carros.cpf_cliente,
+			carro_atual->dados_carros.modelo,
+			carro_atual->dados_carros.ano,
+			carro_atual->dados_carros.data_entrada.dia,
+			carro_atual->dados_carros.data_entrada.mes,
+			carro_atual->dados_carros.data_entrada.ano
+		);
+		carro_atual = carro_atual->next;
+	}
+	fclose(f);
+}
 int main()
 {
     int opc = -1;
@@ -522,6 +561,8 @@ int main()
 		        navegar_lista(lista);
 	        	break;
 	        case 6:
+				salvar_clientes("lista_carros.csv", lista);
+				salvar_carros("lista_carros.csv", lista_carros);
 	        	break;
 	        case 7:
 		        Carros* carro = inserir_dados_carro(lista);
