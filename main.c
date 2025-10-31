@@ -16,10 +16,10 @@ typedef struct{
     Data data_nasc;
 } Clientes;
 
-typedef struct node_Clientes {
+typedef struct Node_Clientes {
     Clientes dados_clientes;
-    struct node_Clientes *prev;
-    struct node_Clientes *next;
+    struct Node_Clientes *prev;
+    struct Node_Clientes *next;
 } Node_Clientes;
 
 typedef struct{
@@ -30,10 +30,10 @@ typedef struct{
     char cpf_cliente[15];
 } Carros;
 
-typedef struct node_carros {
+typedef struct Node_Carros {
     Carros dados_carros;
-    struct node_carros *prev;
-    struct node_carros *next;
+    struct Node_Carros *prev;
+    struct Node_Carros *next;
 } Node_Carros;
 
 typedef struct{
@@ -75,11 +75,11 @@ Lista_Carros* alocar_lista_carros() {
 
 //Verificação de Lista Vazia Clientes
 bool lista_vazia(Lista* l) {
-	return (l->begin == NULL && l->end == NULL && l->size == 0);
+	return (l->size == 0);
 }
 //Verificação de Lista Vazia Carros
 bool lista_vazia_carros(Lista_Carros* l) {
-	return (l->begin == NULL && l->end == NULL && l->size == 0);
+	return (l->size == 0);
 }
 
 
@@ -443,6 +443,19 @@ Node_Clientes* buscar_cliente_carro_cpf(Lista* l, char* cpf){
     return NULL;
 }
 
+void exibir_menu(){
+	puts("========= MENU =========");
+    puts("1 - Exibir Clientes");
+    puts("2 - Inserir Cliente");
+    puts("3 - Buscar Cliente por CPF");
+    puts("4 - Remover Cliente");
+    puts("5 - Navegar na Lista de Clientes");
+    puts("6 - Salvar Lista de Clientes");
+    puts("7 - Inserir Carro");
+    puts("8 - Exibir Carros");
+    puts("0 - Sair");
+	printf("Selecione a Opção: ");
+}
 //exibir a lista de carros
 void imprimir_lista_carros(Lista* lista_clientes, Lista_Carros* l) {
     //pega o valor do inicio da lista
@@ -473,72 +486,61 @@ void imprimir_lista_carros(Lista* lista_clientes, Lista_Carros* l) {
 	}
 }
 
-
 int main()
 {
     int opc = -1;
     Lista* lista = alocar_lista();
     Lista_Carros* lista_carros = alocar_lista_carros();
     do{
-    puts("========= MENU =========");
-    puts("1 - Exibir Clientes");
-    puts("2 - Inserir Cliente");
-    puts("3 - Buscar Cliente por CPF");
-    puts("4 - Remover Cliente");
-    puts("5 - Navegar na Lista de Clientes");
-    puts("6 - Salvar Lista de Clientes");
-    puts("7 - Inserir Carro");
-    puts("8 - Exibir Carros");
-    puts("0 - Sair");
-    printf("Selecione a Opção: ");
-    scanf("%d", &opc);
-    getchar();
-    switch(opc){
-        case 1:
-        imprimir_lista(lista);
-        break;
-        case 2:
-        Clientes* cliente = inserir_dados_cliente();
-        Node_Clientes* node = alocar_node(cliente);
-        inserir_cliente(lista, node);
-        free(cliente);
-        break;
-        case 3:
-        char cpf[15];
-        printf("Busque o CPF: ");
-        fgets(cpf, sizeof(cpf), stdin);
-        cpf[strcspn(cpf, "\n")] = '\0';
-        buscar_contato(lista, cpf);
-        break;
-        case 4:
-        printf("Insira o CPF para Remover: ");
-        fgets(cpf, sizeof(cpf), stdin);
-        cpf[strcspn(cpf, "\n")] = '\0';
-        remover_contato(lista, cpf);
-        break;
-        case 5:
-        navegar_lista(lista);
-        break;
-        case 6:
-        break;
-        case 7:
-        Carros* carro = inserir_dados_carro(lista);
-        if(carro != NULL){
-            Node_Carros* node_carro = alocar_node_carros(carro);
-            inserir_carro(lista_carros, node_carro);
-            free(carro);
-        }
-        break;
-        case 8:
-        imprimir_lista_carros(lista, lista_carros);
-        break;
-        case 0:
-        printf("\nEncerrando...\n");
-        break;
-        default:
-        printf("\nOpção inválida!\n");
-        break;
-    }
+	    exibir_menu();
+	    scanf("%d", &opc);
+	    getchar();
+	    switch(opc){
+	        case 1:
+		        imprimir_lista(lista);
+	        	break;
+	        case 2:
+		        Clientes* cliente = inserir_dados_cliente();
+		        Node_Clientes* node = alocar_node(cliente);
+		        inserir_cliente(lista, node);
+		        free(cliente);
+	        	break;
+	        case 3:
+		        char cpf[15];
+		        printf("Busque o CPF: ");
+		        fgets(cpf, sizeof(cpf), stdin);
+		        cpf[strcspn(cpf, "\n")] = '\0';
+		        buscar_contato(lista, cpf);
+		        break;
+	        case 4:
+		        printf("Insira o CPF para Remover: ");
+		        fgets(cpf, sizeof(cpf), stdin);
+		        cpf[strcspn(cpf, "\n")] = '\0';
+		        remover_contato(lista, cpf);
+		        break;
+	        case 5:
+		        navegar_lista(lista);
+	        	break;
+	        case 6:
+	        	break;
+	        case 7:
+		        Carros* carro = inserir_dados_carro(lista);
+		        if(carro != NULL){
+		            Node_Carros* node_carro = alocar_node_carros(carro);
+		            inserir_carro(lista_carros, node_carro);
+		            free(carro);
+		        }
+		        break;
+	        case 8:
+		        imprimir_lista_carros(lista, lista_carros);
+		        break;
+	        case 0:
+		        printf("\nEncerrando...\n");
+		        break;
+	        default:
+		        printf("\nOpção inválida!\n");
+		        break;
+	    }
     }while(opc != 0);
     return 0;
 }
