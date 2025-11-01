@@ -49,6 +49,18 @@ typedef struct{
     size_t size;
 } Lista;
 
+//Função de limpeza
+
+void clear_screen()
+{
+#if defined(WIN32)||defined(_WIN32)
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+
 //alocação da Lista de Clientes
 Lista* alocar_lista() {
 	Lista* l = (Lista *) calloc(1, sizeof(Lista));
@@ -723,7 +735,7 @@ void exibir_menu(){
 int main()
 {
 	system("chcp 65001");
-	system("cls");
+	clear_screen();
     int opc = -1;
     Lista* lista = alocar_lista();
     Lista_Carros* lista_carros = alocar_lista_carros();
