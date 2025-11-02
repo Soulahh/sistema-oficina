@@ -18,6 +18,7 @@
     int ler_inteiro_positivo(const char* prompt);
     int tratar_data_fevereiro(int ano);
     bool data_valida(int dia, int mes, int ano);
-    bool escolher_modo_busca(const char* prompt);
+    bool escolher_modo(const char* prompt);
     void exibir_menu(void);
+    char* extrair_primeiro_nome(char* nomeCompleto);
 #endif

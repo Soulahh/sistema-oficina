@@ -235,23 +235,6 @@ void buscar_contato_cpf(Lista* l, char* cpf){
     }
 }
 
-char* extrair_primeiro_nome(char* nomeCompleto){
-	char* espaco = strchr(nomeCompleto, ' ');
-	if (espaco != NULL){
-		size_t tamanho = espaco - nomeCompleto;
-		char* primeiroNome = (char *)malloc(tamanho+1);
-		if(primeiroNome == NULL){perror("Alocação falhou!\n"); return NULL;}
-		strncpy(primeiroNome, nomeCompleto, tamanho);
-		primeiroNome[tamanho] = '\0';
-		return primeiroNome;
-	} else {
-		char* primeiroNome = malloc(strlen(nomeCompleto)+1);
-		if(primeiroNome == NULL){perror("Alocação falhou!\n"); return NULL;}
-		strcpy(primeiroNome,nomeCompleto);
-		return primeiroNome;
-	}
-}
-
 void buscar_contato_nome(Lista* lista, char* nome){
 	Node_Clientes* node_atual = lista->begin;
 	int qtd_matches = 0;
@@ -321,7 +304,7 @@ void remover_carro_cpf(Lista_Carros* l, char* cpf){
 }
 
 //remover CLIENTE da lista pelo CPF
-void remover_contato(Lista* l, Lista_Carros* lista_carros, char* cpf){
+void remover_contato_cpf(Lista* l, Lista_Carros* lista_carros, char* cpf){
     if(lista_vazia(l)){
         printf("\nLista Vazia!\n\n");
         return;
@@ -362,6 +345,39 @@ void remover_contato(Lista* l, Lista_Carros* lista_carros, char* cpf){
     if(encontrado == 0){
         printf("\nCliente não Encontrado!\n\n");
     }
+}
+
+void remover_contato_nome(Lista* l, Lista_Carros* lista_carros, char* nome){
+	if(lista_vazia(l)){
+		printf("\nLista Vazia!\n\n"); return;
+	}
+	clear_screen();
+	Node_Clientes* node_atual = l->begin;
+	while(node_atual){
+		if(strcasecmp(node_atual->dados_clientes.nome,nome) == 0){
+			remover_carro_cpf(lista_carros,node_atual->dados_clientes.cpf);
+
+			//Lista com 1 só elem
+			if(node_atual->prev == NULL && node_atual->next == NULL) l->begin = l->end = NULL;
+
+			else if (node_atual->prev == NULL){
+				l->begin = node_atual->next;
+				l->begin->prev = NULL;
+			}
+			else if (node_atual->next == NULL){
+				l->end = node_atual->prev;
+				l->end->next = NULL;
+			}
+			else {
+				node_atual->prev->next = node_atual->next;
+				node_atual->next->prev = node_atual->prev;
+			}
+			printf("\nCliente %s Removido com Sucesso!\n\n",extrair_primeiro_nome(node_atual->dados_clientes.nome));
+			free(node_atual); l->size--; return;
+		}
+		node_atual = node_atual->next;
+	}
+	printf("\nCliente não encontrado!\n\n");
 }
 
 //navegar na Lista de clientes
@@ -489,17 +505,13 @@ Carros* inserir_dados_carro(Lista* lista_clientes){
     scanf("%d", &carro->ano);
     getchar();
     
-    puts("Data de Entrada:");
-    printf("Dia:");
-    scanf("%d", &carro->data_entrada.dia);
-    getchar();
-    printf("Mês: ");
-    scanf("%d", &carro->data_entrada.mes);
-    getchar();
-    printf("Ano: ");
-    scanf("%d", &carro->data_entrada.ano);
-    getchar();
-    
+	do{
+		puts("Data de Entrada:");
+		carro->data_entrada.dia = ler_inteiro_positivo("Dia:");
+		carro->data_entrada.mes = ler_inteiro_positivo("Mês: ");
+		carro->data_entrada.ano = ler_inteiro_positivo("Ano: ");
+	}while(!(data_valida(carro->data_entrada.dia, carro->data_entrada.mes,carro->data_entrada.ano)));
+
     printf("Carro %s Cadastrado com Sucesso!\n\n", carro->modelo);
     return carro;
 }
@@ -767,6 +779,8 @@ int main()
     exibir_menu();
     scanf("%d", &opc);
     getchar();
+	char cpf[15];
+	char nome[100];
     switch(opc){
 			case 1:
 			clear_screen();
@@ -781,11 +795,9 @@ int main()
 			break;
         case 3:
 			clear_screen();
-			char cpf[15];
-			char nome[100];
-			int modo_busca = escolher_modo_busca("Escolha método de busca:\n1 - Nome\n2 - CPF\nSelecione o método: ");
+			int modo = escolher_modo("Escolha método de busca:\n1 - Nome\n2 - CPF\nSelecione o método: ");
 			clear_screen();
-			if(modo_busca){
+			if(modo){
 				printf("Busque o CPF: ");
 				fgets(cpf, sizeof(cpf), stdin);
 				cpf[strcspn(cpf, "\n")] = '\0';
@@ -799,10 +811,18 @@ int main()
 			break;
         case 4:
 			clear_screen();
-			printf("Insira o CPF para Remover: ");
-			fgets(cpf, sizeof(cpf), stdin);
-			cpf[strcspn(cpf, "\n")] = '\0';
-			remover_contato(lista, lista_carros, cpf);
+			int modo = escolher_modo("Escolha método de deleção:\n1 - Nome\n2 - CPF\nSelecione o método:");
+			if(modo){
+				printf("Insira o CPF para Remover: ");
+				fgets(cpf, sizeof(cpf), stdin);
+				cpf[strcspn(cpf, "\n")] = '\0';
+				remover_contato_cpf(lista, lista_carros, cpf);	
+			} else {
+				printf("Busque o Nome: ");
+				fgets(nome, sizeof(nome), stdin);
+				nome[strcspn(nome,"\n")] = '\0';
+				remover_contato_nome(lista, lista_carros, nome);
+			}
 			break;
         case 5:
 			clear_screen();

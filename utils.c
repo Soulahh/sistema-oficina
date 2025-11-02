@@ -65,12 +65,12 @@ bool data_valida(int dia, int mes, int ano){
 	return (dia < data_limite);
 }
 
-bool escolher_modo_busca(const char* prompt){
-	int modo_busca;
+bool escolher_modo(const char* prompt){
+	int modo;
 	do{
-		modo_busca = ler_inteiro(prompt) - 1;
-	} while(modo_busca != 0 && modo_busca != 1);
-	return modo_busca;
+		modo = ler_inteiro(prompt) - 1;
+	} while(modo != 0 && modo != 1);
+	return modo;
 }
 void exibir_menu(){
 	puts("========= MENU =========");
@@ -84,4 +84,21 @@ void exibir_menu(){
     puts("8 - Exibir Carros");
     puts("0 - Sair");
     printf("Selecione a Opção: ");
+}
+
+char* extrair_primeiro_nome(char* nomeCompleto){
+	char* espaco = strchr(nomeCompleto, ' ');
+	if (espaco != NULL){
+		size_t tamanho = espaco - nomeCompleto;
+		char* primeiroNome = (char *)malloc(tamanho+1);
+		if(primeiroNome == NULL){perror("Alocação falhou!\n"); return NULL;}
+		strncpy(primeiroNome, nomeCompleto, tamanho);
+		primeiroNome[tamanho] = '\0';
+		return primeiroNome;
+	} else {
+		char* primeiroNome = malloc(strlen(nomeCompleto)+1);
+		if(primeiroNome == NULL){perror("Alocação falhou!\n"); return NULL;}
+		strcpy(primeiroNome,nomeCompleto);
+		return primeiroNome;
+	}
 }
