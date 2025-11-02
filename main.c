@@ -145,16 +145,12 @@ Clientes* inserir_dados_cliente(){
     fgets(cliente->telefone, sizeof(cliente->telefone), stdin);
     cliente->telefone[strcspn(cliente->telefone, "\n")] = '\0';
     
-    puts("Data de Nascimento:");
-    printf("Dia: ");
-    scanf("%d", &cliente->data_nasc.dia);
-    getchar();
-    printf("Mês: ");
-    scanf("%d", &cliente->data_nasc.mes);
-    getchar();
-    printf("Ano: ");
-    scanf("%d", &cliente->data_nasc.ano);
-    getchar();
+	do{
+		puts("Data de Nascimento:");
+		cliente->data_nasc.dia = ler_inteiro_positivo("Dia: ");
+		cliente->data_nasc.mes = ler_inteiro_positivo("Mês: ");
+		cliente->data_nasc.ano = ler_inteiro_positivo("Ano: ");
+	}while(!(data_valida(cliente->data_nasc.dia, cliente->data_nasc.mes, cliente->data_nasc.ano)));
     
     printf("Usuário %s Cadastrado com Sucesso!\n\n", cliente->nome);
     return cliente;
@@ -758,27 +754,6 @@ void recuperar_dados(Lista_Carros* lista_carros, Lista* lista){
 	recuperar_carros("carros.csv", lista_carros);
 }
 
-bool escolher_modo_busca(const char* prompt){
-	int modo_busca;
-	do{
-		modo_busca = ler_inteiro(prompt) - 1;
-	} while(modo_busca != 0 && modo_busca != 1);
-	return modo_busca;
-}
-
-void exibir_menu(){
-	puts("========= MENU =========");
-    puts("1 - Exibir Clientes");
-    puts("2 - Inserir Cliente");
-    puts("3 - Buscar Cliente");
-    puts("4 - Remover Cliente");
-    puts("5 - Navegar na Lista de Clientes");
-    puts("6 - Salvar Dados");
-    puts("7 - Inserir Carro");
-    puts("8 - Exibir Carros");
-    puts("0 - Sair");
-    printf("Selecione a Opção: ");
-}
 int main()
 {
 	setlocale(LC_ALL,"");
