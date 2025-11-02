@@ -347,39 +347,32 @@ void remover_contato_cpf(Lista* l, Lista_Carros* lista_carros, char* cpf){
     }
 }
 
-void remover_contato_nome(Lista* l, Lista_Carros* lista_carros, char* nome){
-	if(lista_vazia(l)){
-		printf("\nLista Vazia!\n\n"); return;
-	}
-	clear_screen();
-	Node_Clientes* node_atual = l->begin;
-	while(node_atual){
+
+void gerenciar_remocao_nome(Lista* lista, Lista_Carros* lista_carros, char* nome){
+	Node_Clientes* node_atual = lista->begin;
+	char* cpf[15];
+	int qtd_matches = 0;
+	if(lista_vazia(lista)){printf("Lista vazia!\n");return;}
+	while(node_atual != NULL){
 		if(strcasecmp(node_atual->dados_clientes.nome,nome) == 0){
-			remover_carro_cpf(lista_carros,node_atual->dados_clientes.cpf);
-
-			//Lista com 1 só elem
-			if(node_atual->prev == NULL && node_atual->next == NULL) l->begin = l->end = NULL;
-
-			else if (node_atual->prev == NULL){
-				l->begin = node_atual->next;
-				l->begin->prev = NULL;
-			}
-			else if (node_atual->next == NULL){
-				l->end = node_atual->prev;
-				l->end->next = NULL;
-			}
-			else {
-				node_atual->prev->next = node_atual->next;
-				node_atual->next->prev = node_atual->prev;
-			}
-			printf("\nCliente %s Removido com Sucesso!\n\n",extrair_primeiro_nome(node_atual->dados_clientes.nome));
-			free(node_atual); l->size--; return;
+			char* nome_cliente = extrair_primeiro_nome(node_atual->dados_clientes.nome);
+			if(qtd_matches == 0) printf("\nCliente Encontrado!\n");
+			qtd_matches++;
+			printf("Nome:     %s\n", node_atual->dados_clientes.nome);
+			printf("ID:       %d\n", node_atual->dados_clientes.id);
+			printf("CPF:      %s\n\n",node_atual->dados_clientes.cpf);
+			free(nome_cliente);
 		}
 		node_atual = node_atual->next;
 	}
-	printf("\nCliente não encontrado!\n\n");
-}
-
+	if(qtd_matches == 0){
+		printf("\nCliente não encontrado!\n"); return;
+	} else {
+		printf("\nDigite o CPF do cliente que deseja remover: ");
+		fgets(cpf, sizeof(cpf), stdin);
+		remover_contato_cpf(lista, lista_carros, cpf);
+	}
+} 
 //navegar na Lista de clientes
 void navegar_lista(Lista* l) {
 	if(lista_vazia(l)){
@@ -822,7 +815,7 @@ int main()
 				printf("Busque o Nome: ");
 				fgets(nome, sizeof(nome), stdin);
 				nome[strcspn(nome,"\n")] = '\0';
-				remover_contato_nome(lista, lista_carros, nome);
+				gerenciar_remocao_nome(lista, lista_carros, nome);
 			}
 			break;
         case 5:
