@@ -355,13 +355,11 @@ void gerenciar_remocao_nome(Lista* lista, Lista_Carros* lista_carros, char* nome
 	if(lista_vazia(lista)){printf("Lista vazia!\n");return;}
 	while(node_atual != NULL){
 		if(strcasecmp(node_atual->dados_clientes.nome,nome) == 0){
-			char* nome_cliente = extrair_primeiro_nome(node_atual->dados_clientes.nome);
 			if(qtd_matches == 0) printf("\nCliente Encontrado!\n");
 			qtd_matches++;
 			printf("Nome:     %s\n", node_atual->dados_clientes.nome);
 			printf("ID:       %d\n", node_atual->dados_clientes.id);
 			printf("CPF:      %s\n\n",node_atual->dados_clientes.cpf);
-			free(nome_cliente);
 		}
 		node_atual = node_atual->next;
 	}
@@ -370,6 +368,7 @@ void gerenciar_remocao_nome(Lista* lista, Lista_Carros* lista_carros, char* nome
 	} else {
 		printf("\nDigite o CPF do cliente que deseja remover: ");
 		fgets(cpf, sizeof(cpf), stdin);
+		cpf[strcspn(cpf, "\n")] = '\0';
 		remover_contato_cpf(lista, lista_carros, cpf);
 	}
 } 
