@@ -350,7 +350,7 @@ void remover_contato_cpf(Lista* l, Lista_Carros* lista_carros, char* cpf){
 
 void gerenciar_remocao_nome(Lista* lista, Lista_Carros* lista_carros, char* nome){
 	Node_Clientes* node_atual = lista->begin;
-	char* cpf[15];
+	char cpf[15];
 	int qtd_matches = 0;
 	if(lista_vazia(lista)){printf("Lista vazia!\n");return;}
 	while(node_atual != NULL){
