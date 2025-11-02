@@ -781,6 +781,7 @@ int main()
     getchar();
 	char cpf[15];
 	char nome[100];
+	int modo;
     switch(opc){
 			case 1:
 			clear_screen();
@@ -795,7 +796,7 @@ int main()
 			break;
         case 3:
 			clear_screen();
-			int modo = escolher_modo("Escolha método de busca:\n1 - Nome\n2 - CPF\nSelecione o método: ");
+			modo = escolher_modo("Escolha método de busca:\n1 - Nome\n2 - CPF\nSelecione o método: ");
 			clear_screen();
 			if(modo){
 				printf("Busque o CPF: ");
@@ -811,7 +812,7 @@ int main()
 			break;
         case 4:
 			clear_screen();
-			int modo = escolher_modo("Escolha método de deleção:\n1 - Nome\n2 - CPF\nSelecione o método:");
+			modo = escolher_modo("Escolha método de deleção:\n1 - Nome\n2 - CPF\nSelecione o método:");
 			if(modo){
 				printf("Insira o CPF para Remover: ");
 				fgets(cpf, sizeof(cpf), stdin);
