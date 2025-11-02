@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "utils.h"
 #include <locale.h>
 
 typedef struct{
@@ -59,27 +60,6 @@ bool lista_vazia_carros(Lista_Carros* l) {
 	return (l->size == 0);
 }
 
-void clear_screen()
-{
-#if defined(WIN32)||defined(_WIN32)
-    system("cls");
-#else
-    system("clear");
-#endif
-}
-
-int ler_inteiro(const char* prompt){
-    int valor, c, sucesso;
-    do{
-        printf("%s",prompt);
-        sucesso = scanf("%d", &valor);
-        if(sucesso != 1){
-            printf("Entrada inválida. Tente novamente!\n");
-        }
-        while ((c = getchar()) != '\n' && c != EOF);
-    } while(sucesso != 1);
-    return valor;
-}
 
 //alocação da Lista de Clientes
 Lista* alocar_lista() {
@@ -281,7 +261,7 @@ void buscar_contato_nome(Lista* lista, char* nome){
 	int qtd_matches = 0;
 	if(lista_vazia(lista)){printf("Lista vazia!\n");return;}
 	while(node_atual != NULL){
-		if(strcmp(node_atual->dados_clientes.nome,nome) == 0){
+		if(strcasecmp(node_atual->dados_clientes.nome,nome) == 0){
 			char* nome_cliente = extrair_primeiro_nome(node_atual->dados_clientes.nome);
 			if(qtd_matches == 0) printf("\nCliente Encontrado!\n");
 			qtd_matches++;
