@@ -144,12 +144,16 @@ Clientes* inserir_dados_cliente(){
     printf("Digite o Telefone: ");
     fgets(cliente->telefone, sizeof(cliente->telefone), stdin);
     cliente->telefone[strcspn(cliente->telefone, "\n")] = '\0';
-    
+    int contador = 0;
 	do{
+		if(contador>0)printf("\nData inválida, favor reinserir!\n\n");
 		puts("Data de Nascimento:");
 		cliente->data_nasc.dia = ler_inteiro_positivo("Dia: ");
 		cliente->data_nasc.mes = ler_inteiro_positivo("Mês: ");
 		cliente->data_nasc.ano = ler_inteiro_positivo("Ano: ");
+		printf("\n");
+		contador++;
+		clear_screen();
 	}while(!(data_valida(cliente->data_nasc.dia, cliente->data_nasc.mes, cliente->data_nasc.ano)));
     
     printf("Usuário %s Cadastrado com Sucesso!\n\n", cliente->nome);
