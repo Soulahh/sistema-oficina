@@ -128,7 +128,10 @@ Clientes* inserir_dados_cliente(){
     Clientes* cliente = (Clientes *) calloc(1, sizeof(Clientes));
     cliente->id = gerar_id();
     printf("\n");
-    puts("===== CADASTRO DE CLIENTES =====");
+    puts("=============================================");
+    puts("         CADASTRO DE CLIENTES               ");
+    puts("=============================================");
+	printf("\n");
     printf("Digite o Nome: ");
     fgets(cliente->nome, sizeof(cliente->nome), stdin);
     cliente->nome[strcspn(cliente->nome, "\n")] = '\0';
@@ -146,8 +149,13 @@ Clientes* inserir_dados_cliente(){
     cliente->telefone[strcspn(cliente->telefone, "\n")] = '\0';
     int contador = 0;
 	do{
-		if(contador>0)printf("\nData inválida, favor reinserir!\n\n");
-		puts("Data de Nascimento:");
+		if(contador>0){
+			printf("\n");
+            puts("=============================================");
+            puts("       Data inválida, favor reinserir!       ");
+            puts("=============================================");
+		}
+		puts("\nData de Nascimento:");
 		cliente->data_nasc.dia = ler_inteiro_positivo("Dia: ");
 		cliente->data_nasc.mes = ler_inteiro_positivo("Mês: ");
 		cliente->data_nasc.ano = ler_inteiro_positivo("Ano: ");
@@ -156,7 +164,9 @@ Clientes* inserir_dados_cliente(){
 		clear_screen();
 	}while(!(data_valida(cliente->data_nasc.dia, cliente->data_nasc.mes, cliente->data_nasc.ano)));
     
-    printf("Usuário %s Cadastrado com Sucesso!\n\n", cliente->nome);
+    puts("=============================================");
+    printf("   Usuário %s Cadastrado com Sucesso!       ", cliente->nome);
+    puts("\n=============================================");
     return cliente;
 }
 
@@ -227,48 +237,66 @@ void buscar_contato_cpf(Lista* l, char* cpf){
     while(node_atual != NULL){
     if(strcmp(node_atual->dados_clientes.cpf, cpf) == 0){
         encontrado = 1;
-        printf("\nCliente %s Encontrado!\n", node_atual->dados_clientes.nome);
+		clear_screen();
+		puts("\n===========================================");
+        printf("    Cliente Encontrado!                   \n");
+        puts("===========================================");
+        printf("Nome: %s\n", node_atual->dados_clientes.nome);
         printf("ID: %d\n", node_atual->dados_clientes.id);
-	    printf("Email: %s\n\n", node_atual->dados_clientes.email);
+	    printf("Email: %s\n", node_atual->dados_clientes.email);
+		printf("CPF: %s\n", node_atual->dados_clientes.cpf);
+		puts("===========================================");
 	    break;
     }
     node_atual = node_atual->next;
     }
-    if(encontrado == 0){
-        printf("\nNão Encontrado!\n\n");
+    if(!encontrado){
+        puts("\n===========================================");
+        puts("     Cliente NÃO encontrado!             ");
+        puts("===========================================");
     }
 }
 
 void buscar_contato_nome(Lista* lista, char* nome){
 	Node_Clientes* node_atual = lista->begin;
 	int qtd_matches = 0;
-	if(lista_vazia(lista)){printf("Lista vazia!\n");return;}
+	if(lista_vazia(lista)){
+		printf("\n");
+		puts("===========================================");
+        puts("           Lista de Clientes Vazia!        ");
+        puts("===========================================");
+        return;
+	}
 	while(node_atual != NULL){
 		if(strcasecmp(node_atual->dados_clientes.nome,nome) == 0){
 			char* nome_cliente = extrair_primeiro_nome(node_atual->dados_clientes.nome);
-			if(qtd_matches == 0) printf("\nCliente Encontrado!\n");
+			if(qtd_matches == 0){
+				puts("\n===========================================");
+        		printf("    Cliente Encontrado!                   \n");
+        		puts("===========================================");
+			};
 			qtd_matches++;
 			printf("Nome:     %s\n", node_atual->dados_clientes.nome);
 			printf("ID:       %d\n", node_atual->dados_clientes.id);
 			printf("CPF:      %s\n",node_atual->dados_clientes.cpf);
 			printf("Email:    %s\n", node_atual->dados_clientes.email);
-			printf("Telefone: %s\n\n", node_atual->dados_clientes.telefone);
+			printf("Telefone: %s\n", node_atual->dados_clientes.telefone);
+			puts("===========================================");
 			free(nome_cliente);
 		}
 		node_atual = node_atual->next;
 	}
 	if(qtd_matches == 0){
-		printf("\nCliente não encontrado!\n");
+        puts("\n===========================================");
+        puts("     Cliente NÃO encontrado!             ");
+        puts("===========================================");
 	}
 }
 
 //remover CARRO da lista pelo CPF
 //só vai ser chamada quando um cliente for removido.
 void remover_carro_cpf(Lista_Carros* l, char* cpf){
-    if(lista_vazia_carros(l)){
-        printf("\nLista Vazia!\n\n");
-        return;
-    }
+    if(lista_vazia_carros(l)) return;
     Node_Carros* node_atual = l->begin;
     Node_Carros* node_proximo = NULL;
     int contagemCarro = 0;
@@ -301,16 +329,13 @@ void remover_carro_cpf(Lista_Carros* l, char* cpf){
             break;
         }
         node_atual = node_proximo;
-    if(contagemCarro > 0){
-        printf("\n%d Carro(s) do Cliente também foram removidos!\n");
-    }
     }
 }
 
 //remover CLIENTE da lista pelo CPF
 void remover_contato_cpf(Lista* l, Lista_Carros* lista_carros, char* cpf){
     if(lista_vazia(l)){
-        printf("\nLista Vazia!\n\n");
+        printf("\n>>> A lista está vazia! Não há clientes para remover.\n\n");
         return;
     }
 	clear_screen();
@@ -339,7 +364,8 @@ void remover_contato_cpf(Lista* l, Lista_Carros* lista_carros, char* cpf){
                 // o anterior do proximo aponta pro anterior do atual
                 node_atual->next->prev = node_atual->prev;
             }
-            printf("\nCliente Removido com Sucesso!\n\n");
+            printf("\n>>> Cliente %s (CPF: %s) removido com sucesso!\n", node_atual->dados_clientes.nome, node_atual->dados_clientes.cpf);
+            printf(">>> Todos os carros associados também foram removidos.\n");
             free(node_atual);
             l->size--;
             break;
@@ -356,21 +382,30 @@ void gerenciar_remocao_nome(Lista* lista, Lista_Carros* lista_carros, char* nome
 	Node_Clientes* node_atual = lista->begin;
 	char cpf[15];
 	int qtd_matches = 0;
-	if(lista_vazia(lista)){printf("Lista vazia!\n");return;}
+	if(lista_vazia(lista)){printf("\n>>> A lista de clientes está vazia! Não há clientes para remover.\n\n");return;}
+	clear_screen();
+	printf("===============================================\n");
+    printf("    BUSCA DE CLIENTE POR NOME\n");
+    printf("===============================================\n");
 	while(node_atual != NULL){
 		if(strcasecmp(node_atual->dados_clientes.nome,nome) == 0){
-			if(qtd_matches == 0) printf("\nCliente Encontrado!\n");
+			if(qtd_matches == 0){
+				printf("\n>>> Clientes Encontrados:\n");
+                printf("===============================================\n");
+			}
 			qtd_matches++;
-			printf("Nome:     %s\n", node_atual->dados_clientes.nome);
-			printf("ID:       %d\n", node_atual->dados_clientes.id);
-			printf("CPF:      %s\n\n",node_atual->dados_clientes.cpf);
+			printf("Cliente #%d\n", qtd_matches);
+            printf(" Nome:     %s\n", node_atual->dados_clientes.nome);
+            printf(" ID:       %d\n", node_atual->dados_clientes.id);
+            printf(" CPF:      %s\n", node_atual->dados_clientes.cpf);
+            printf("===============================================\n");
 		}
 		node_atual = node_atual->next;
 	}
 	if(qtd_matches == 0){
-		printf("\nCliente não encontrado!\n"); return;
+		printf("\n>>> ERRO: Nenhum cliente encontrado com o nome '%s'.\n\n", nome); return;
 	} else {
-		printf("\nDigite o CPF do cliente que deseja remover: ");
+		printf("\n>>> Digite o CPF do cliente que deseja remover: ");
 		fgets(cpf, sizeof(cpf), stdin);
 		cpf[strcspn(cpf, "\n")] = '\0';
 		remover_contato_cpf(lista, lista_carros, cpf);
@@ -379,17 +414,17 @@ void gerenciar_remocao_nome(Lista* lista, Lista_Carros* lista_carros, char* nome
 //navegar na Lista de clientes
 void navegar_lista(Lista* l) {
 	if(lista_vazia(l)){
-	    printf("\nLista Vazia!\n\n");
+	    printf("\n>>> A lista de clientes está vazia! Não há contatos para navegar.\n\n");
 	    return;
 	}
 	Node_Clientes* node_atual = l->begin;
 	int opc = -1;
 	while(opc != 0){
-	    
-	puts("---- Navegação de Contatos ----");
-	printf("Atual: [ID %d] %s\n", 
-           node_atual->dados_clientes.id, 
-           node_atual->dados_clientes.nome);
+	clear_screen();
+    printf("===============================================\n");
+    printf("    NAVEGAÇÃO DE CONTATOS\n");
+    printf("===============================================\n");
+	printf(">>> Atual: [ID %d] %s\n", node_atual->dados_clientes.id, node_atual->dados_clientes.nome);
 	if(node_atual->prev == NULL){
 	    printf("Anterior: (Início da Lista)\n");
 	}else{
@@ -400,11 +435,12 @@ void navegar_lista(Lista* l) {
 	}else{
 	    printf("Próximo: %s\n", node_atual->next->dados_clientes.nome);
 	}
-	printf("\n");
-	puts("Opções de Navegação:");
-	puts("1 - Ir para o Próximo");
-	puts("2 - Ir para o Anterior");
-	puts("0 - Para Voltar ao Menu");
+	printf("\n===============================================\n");
+	printf("Opções de Navegação:\n");
+	printf("1 - Ir para o Próximo\n");
+	printf("2 - Ir para o Anterior\n");
+	printf("0 - Voltar ao Menu Principal\n");
+	printf("===============================================\n");
 	printf("Selecione a Opção de Navegação: ");
 	scanf("%d", &opc);
 	getchar();
@@ -415,7 +451,8 @@ void navegar_lista(Lista* l) {
 			if(node_atual->next != NULL) {
 				node_atual = node_atual->next;
 			}else{
-				printf("\nEste é o último contato!\n\n");
+				printf("\n>>> Este é o último cliente da lista!\n\n");
+				getchar();
 			}
 			break;
 	    case 2:
@@ -424,15 +461,16 @@ void navegar_lista(Lista* l) {
 			if(node_atual->prev != NULL) {
 				node_atual = node_atual->prev;
 			}else{
-				printf("\nNão há contato anterior!\n\n");
+				printf("\n>>> Não há um cliente anterior!\n\n");
 			}
 			break;
 	    case 0:
 			clear_screen();
+			printf("\n>>> Retornando ao Menu Principal...\n\n");
 			break;
 	    default:
 			clear_screen();
-			puts("\nOpção Inválida!\n\n");
+			printf("\n>>> Opção Inválida! Tente novamente.\n\n");
 			break;
 	}
 	}
@@ -443,22 +481,28 @@ void imprimir_lista(Lista* l) {
     //pega o valor do inicio da lista
 	Node_Clientes* node_atual = l->begin;
 	if(lista_vazia(l)){
-	    printf("\nA Lista está vazia!\n\n");
+	    printf("\n>>> A Lista de Clientes está vazia!\n\n");
 	    return;
 	}
 	//percorre a lista até ser NULL
-	//imprime e depois atualiza o valor para o próximo 
-	printf("\n");
-	puts(" ===== Lista de Clientes =====");
+	//imprime e depois atualiza o valor para o próximo
+
+    clear_screen();
+    printf("===============================================\n");
+    printf("      LISTA DE CLIENTES CADASTRADOS\n");
+    printf("===============================================\n");
 	while(node_atual != NULL){
-	   printf("ID:         %d\n", node_atual->dados_clientes.id);
-	   printf("Nome:       %s\n", node_atual->dados_clientes.nome);
-	   printf("Email:      %s\n", node_atual->dados_clientes.email);
-	   printf("CPF:        %s\n", node_atual->dados_clientes.cpf);
-	   printf("Telefone:   %s\n",node_atual->dados_clientes.telefone);
-	   printf("Data de Nascimento: %02d/%02d/%04d\n\n",node_atual->dados_clientes.data_nasc.dia,node_atual->dados_clientes.data_nasc.mes,node_atual->dados_clientes.data_nasc.ano);
-	   node_atual = node_atual->next;
+		printf("\n-----------------------------------------------\n");
+		printf("ID:         %d\n", node_atual->dados_clientes.id);
+		printf("Nome:       %s\n", node_atual->dados_clientes.nome);
+		printf("Email:      %s\n", node_atual->dados_clientes.email);
+		printf("CPF:        %s\n", node_atual->dados_clientes.cpf);
+		printf("Telefone:   %s\n",node_atual->dados_clientes.telefone);
+		printf("Data de Nascimento: %02d/%02d/%04d\n\n",node_atual->dados_clientes.data_nasc.dia,node_atual->dados_clientes.data_nasc.mes,node_atual->dados_clientes.data_nasc.ano);
+		printf("-----------------------------------------------\n");
+		node_atual = node_atual->next;
 	}
+	printf("\n===============================================\n");
 }
 
 //==========================================CARROS========================================
@@ -472,43 +516,45 @@ int gerar_id_carro(){
 //ler dados do Carro
 Carros* inserir_dados_carro(Lista* lista_clientes){
     if(lista_vazia(lista_clientes)){
-        printf("\nÉ necessário ter clientes cadastrados para inserir um carro.\n");
+        printf("\n>>> É necessário ter clientes cadastrados para inserir um carro.\n\n");
         return NULL;
     }
     Carros* carro = (Carros *) calloc(1, sizeof(Carros));
     carro->id = gerar_id_carro();
-    printf("\n");
-    puts("===== CADASTRO DE CARROS =====");
-    printf("Digite o Modelo: ");
+    clear_screen();
+    puts("===============================================");
+    puts("            CADASTRO DE CARRO");
+    puts("===============================================");
+    printf("Digite o Modelo do Carro: ");
     fgets(carro->modelo, sizeof(carro->modelo), stdin);
     carro->modelo[strcspn(carro->modelo, "\n")] = '\0';
 
-	printf("Digite a Cor: ");
+	printf("Digite a Cor do Carro: ");
 	fgets(carro->cor, sizeof(carro->cor), stdin);
 	carro->cor[strcspn(carro->cor, "\n")] = '\0';
     
-    printf("Digite o CPF do Cliente Dono: ");
+    printf("Digite o CPF do Cliente Proprietário: ");
     fgets(carro->cpf_cliente, sizeof(carro->cpf_cliente), stdin);
     carro->cpf_cliente[strcspn(carro->cpf_cliente, "\n")] = '\0';
     
     if(cliente_existente(lista_clientes, carro->cpf_cliente) == false){
-        printf("\nCPF Inválido! Não encontrado no banco de clientes.\n");
+        printf("\n>>> CPF Inválido! Não encontrado no banco de clientes.\n\n");
         free(carro);
         return NULL;
     }
     
-    printf("Ano do Carro: ");
+    printf("Digite o Ano do Carro: ");
     scanf("%d", &carro->ano);
     getchar();
     
 	do{
-		puts("Data de Entrada:");
+		puts("\nDigite a Data de Entrada do Carro:");
 		carro->data_entrada.dia = ler_inteiro_positivo("Dia:");
 		carro->data_entrada.mes = ler_inteiro_positivo("Mês: ");
 		carro->data_entrada.ano = ler_inteiro_positivo("Ano: ");
 	}while(!(data_valida(carro->data_entrada.dia, carro->data_entrada.mes,carro->data_entrada.ano)));
 
-    printf("Carro %s Cadastrado com Sucesso!\n\n", carro->modelo);
+    printf("\n>>> Carro %s (%d) Cadastrado com Sucesso!\n\n", carro->modelo, carro->ano);
     return carro;
 }
 
@@ -518,7 +564,7 @@ Node_Carros* alocar_node_carros(Carros* carro) {
     //pois cada cliente é inserido 1 por 1
 	Node_Carros* node = (Node_Carros *) calloc(1, sizeof(Node_Carros));
 	if(node == NULL) {
-		printf("\nAlocação Falhou\n\n");
+		printf("\nErro na alocação de memória para o nó do carro!\n\n");
 		exit(1);
 	}
 	//no nó, os dados do carro passados por parâmetro
@@ -574,17 +620,20 @@ void imprimir_lista_carros(Lista* lista_clientes, Lista_Carros* l) {
     //pega o valor do inicio da lista
 	Node_Carros* node_atual = l->begin;
 	if(lista_vazia_carros(l)){
-	    printf("\nA Lista está vazia!\n\n");
+	    printf("\n>>> A Lista de Carros está vazia!\n\n");
 	    return;
 	}
 	//percorre a lista até ser NULL
 	//imprime e depois atualiza o valor para o próximo 
-	printf("\n");
-	puts(" ===== Lista de Carros =====");
+    clear_screen(); // Limpa a tela (se necessário)
+    printf("===============================================\n");
+    printf("          LISTA DE CARROS CADASTRADOS\n");
+    printf("===============================================\n");
 	while(node_atual != NULL){
-	    printf("ID: %d\n", node_atual->dados_carros.id);
-	    printf("Modelo: %s\n", node_atual->dados_carros.modelo);
-		printf("Cor: %s\n", node_atual->dados_carros.cor);
+        printf("\n-----------------------------------------------\n");
+        printf("ID:             %d\n", node_atual->dados_carros.id);
+        printf("Modelo:         %s\n", node_atual->dados_carros.modelo);
+        printf("Cor:            %s\n", node_atual->dados_carros.cor);
 	    
 	    //atribui o cpf ligado ao carro para a variável
 	    char* cpf_cliente = node_atual->dados_carros.cpf_cliente;
@@ -592,19 +641,21 @@ void imprimir_lista_carros(Lista* lista_clientes, Lista_Carros* l) {
 	    Node_Clientes* cliente_dono = buscar_contato_carro_cpf(lista_clientes, cpf_cliente);
 	    
 	    if(cliente_dono != NULL){
-	        printf("Cliente: %s\n", cliente_dono->dados_clientes.nome);
-	        printf("CPF: %s\n", cliente_dono->dados_clientes.cpf);
+            printf("Cliente:        %s\n", cliente_dono->dados_clientes.nome);
+            printf("CPF:            %s\n", cliente_dono->dados_clientes.cpf);
 	    }else{
-	        printf("\nCPF do Cliente não encontrado!\n\n");
+            printf("Cliente:        Não encontrado!\n");
+            printf("CPF do Cliente não encontrado na base de dados.\n\n");
 	    }
-	    printf("\n");
+        printf("-----------------------------------------------\n");
 	    node_atual = node_atual->next;
 	}
+	printf("\n===============================================\n");
 }
 
 void salvar_clientes(const char* arquivo_csv, Lista* lista){
 		FILE* f = fopen(arquivo_csv, "w");
-		if(f == NULL){perror("Erro na abertura do arquivo CSV!");return;}
+		if(f == NULL){perror("Erro ao abrir o arquivo CSV");;return;}
 		fprintf(f, "id_cliente,nome,cpf,email,telefone,data_nasc\n");
 		Node_Clientes* cliente_atual  = lista->begin;
 		while(cliente_atual != NULL){
@@ -620,11 +671,13 @@ void salvar_clientes(const char* arquivo_csv, Lista* lista){
 			cliente_atual = cliente_atual->next;
 		}
 		fclose(f);
+
+		printf(">>> Dados de clientes salvos com sucesso no arquivo '%s'.\n\n", arquivo_csv);
 }
 
 void salvar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
 	FILE* f = fopen(arquivo_csv, "w");
-	if(f==NULL){perror("Erro na abertura do arquivo CSV!");return;}
+	if(f==NULL){perror("Erro ao abrir o arquivo CSV");return;}
 	fprintf(f,"id_carro,cpf_cliente,modelo,cor,ano,data_entrada\n");
 	Node_Carros* carro_atual = lista_carros->begin;
 	while(carro_atual != NULL){
@@ -641,6 +694,7 @@ void salvar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
 		carro_atual = carro_atual->next;
 	}
 	fclose(f);
+	printf(">>> Dados de carros salvos com sucesso no arquivo '%s'.\n\n", arquivo_csv);
 }
 
 void recuperar_clientes(const char* arquivo_csv, Lista* lista){
@@ -698,12 +752,13 @@ void recuperar_clientes(const char* arquivo_csv, Lista* lista){
 	fclose(f);
 	for(int i = 0; i < contador; i++) gerar_id();
 	printf("Clientes recuperados com sucesso!\n");
+	    if (contador > 0) printf(">>> %d clientes recuperados com sucesso!\n", contador);
 }
-
 void recuperar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
 	FILE* f = fopen(arquivo_csv,"r");
 	if(f==NULL)return;
 	char linha[1024];
+	int contador = 0;
 	
 	fgets(linha,sizeof(linha),f);
 	while(fgets(linha,sizeof(linha),f)){
@@ -712,7 +767,7 @@ void recuperar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
 		if(linha[0] == '\0') continue;
 		Carros* carro_atual = (Carros*) calloc(1,sizeof(Carros));
 		if (!carro_atual) {
-            fprintf(stderr, "Erro ao alocar memória para carro\n");
+            fprintf(stderr, "Erro ao alocar memória para carro.\n");
             fclose(f);
             return;
         }
@@ -753,8 +808,10 @@ void recuperar_carros(const char* arquivo_csv, Lista_Carros* lista_carros){
 		inserir_carro(lista_carros,node_atual);
 		free(carro_atual);
 		lista_carros->size++;
+		contador++;
 	}
 	fclose(f);
+	if (contador > 0) printf(">>> %d carros recuperados com sucesso!\n", contador);
 }
 
 void recuperar_dados(Lista_Carros* lista_carros, Lista* lista){
@@ -764,7 +821,7 @@ void recuperar_dados(Lista_Carros* lista_carros, Lista* lista){
 
 int main()
 {
-	setlocale(LC_ALL,"");
+	setlocale(LC_ALL,"pt_BR.UTF-8");
 	system("chcp 65001");
 	clear_screen();
     int opc = -1;
@@ -845,11 +902,11 @@ int main()
 			break;
         case 0:
 			clear_screen();
-			printf("\nEncerrando...\n");
+			printf("\n>>> Encerrando...\n");
 			break;
         default:
 			clear_screen();
-			printf("\nOpção inválida!\n\n");
+			printf("\n>>> Opção inválida!\n\n");
 			break;
     }
     } while(opc != 0);

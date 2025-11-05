@@ -73,7 +73,9 @@ bool escolher_modo(const char* prompt){
 	return modo;
 }
 void exibir_menu(){
-	puts("========= MENU =========");
+    puts("====================================================");
+    puts("                    MENU PRINCIPAL                 ");
+    puts("----------------------------------------------------");
     puts("1 - Exibir Clientes");
     puts("2 - Inserir Cliente");
     puts("3 - Buscar Cliente");
@@ -83,6 +85,7 @@ void exibir_menu(){
     puts("7 - Inserir Carro");
     puts("8 - Exibir Carros");
     puts("0 - Sair");
+    puts("----------------------------------------------------");
     printf("Selecione a Opção: ");
 }
 
